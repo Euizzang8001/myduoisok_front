@@ -550,6 +550,7 @@ if search_summoner: #검색하기 위해 버튼을 누르면 검색 정보를 db
                                 st.write(f"<p style='text-align: center; font-size: 2;'><strong>당신은 버스 승객입니다.</p>", unsafe_allow_html=True)
                             else:
                                 st.write(f"<p style='text-align: center; font-size: 2;'><strong>당신 때문에 패배했네요!</p>", unsafe_allow_html=True)
+                                st.write(f"<p style='text-align: center; font-size: 2;'><strong>똥 좀 그만!@!@!@!@!@!</p>", unsafe_allow_html=True)
                         elif info < -50:
                             if summoner_info_per_match['win']:
                                 st.write(f"<p style='text-align: center; font-size: 2;'><strong>당신은 버스 승객입니다.</p>", unsafe_allow_html=True)
