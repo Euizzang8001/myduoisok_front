@@ -5,6 +5,7 @@ import json
 import os
 from PIL import Image
 import io
+back_url = st.secrets["BACK_URL"]
 
 get_puuid_url = back_url + '/get-summoner'
 get_match_list_url = back_url + '/get-matchid'
