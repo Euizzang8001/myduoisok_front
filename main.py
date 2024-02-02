@@ -5,11 +5,6 @@ import json
 import os
 from PIL import Image
 import io
-from dotenv import load_dotenv
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-load_dotenv(os.path.join(BASE_DIR, ".env"))
-back_url = os.environ["back_url"]
 
 get_puuid_url = back_url + '/get-summoner'
 get_match_list_url = back_url + '/get-matchid'
