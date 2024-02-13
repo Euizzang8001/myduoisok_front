@@ -11,7 +11,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 back_url = os.environ["back_url"]
 
-get_puuid_url = back_url + '/get-summoner'
+get_puuid_url = back_url + '/get-puuid'
 get_match_list_url = back_url + '/get-matchid'
 get_match_info_url = back_url + '/get-matchinfo'
 check_match_in_db_url = back_url + '/check-match-in-db'
@@ -33,7 +33,8 @@ st.write(explain1)
 st.write(explain2)
 st.write(explain3)
 # summoner = st.text_input('Write The Summoner Name(Without Tag and Seperate Summoner Names with Commas)')
-summoner = st.text_input("검색하고 싶은 소환사들의 이름을 쓰세요(태그X/','로 구분하세요)")
+summoner = st.text_input("검색하고 싶은 소환사들의 소환사명과 태그를 쓰세요!")
+st.write("','로 구분하세요 ex) 거모동의자랑#KR1, 순대꼬치#KR1")
 search_summoner = st.button('Search')
 
 summoner_puuid_list = []
@@ -46,8 +47,9 @@ if search_summoner: #검색하기 위해 버튼을 누르면 검색 정보를 db
     summoner_nospace = ''.join(i for i in summoner if not i.isspace())
     summoner_list = list(summoner_nospace.split(','))
     st.write(f':man_and_woman_holding_hands:{summoner}:woman_and_man_holding_hands: Your Matches Are Here!')
-    for summoner_name in summoner_list:
-        summoner_puuid = requests.get(get_puuid_url, params={'summoner': summoner_name}).json()
+    for summoner_name_and_tagline in summoner_list:
+        get_per_summoner_puuid_url = get_puuid_url + summoner_name_and_tagline
+        summoner_puuid = requests.get(get_per_summoner_puuid_url, params={'summoner_and_tagline': summoner_name_and_tagline}).json()
         summoner_puuid_list.append(summoner_puuid)
         if len(match_id_list) == 0:
             match_id_list = requests.get(get_match_list_url, params={'summoner_puuid': summoner_puuid}).json()
