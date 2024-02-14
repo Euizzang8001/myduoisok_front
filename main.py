@@ -211,6 +211,7 @@ if search_summoner: #검색하기 위해 버튼을 누르면 검색 정보를 db
                         goldSum[per_summoner_info['teamId']] = 0
                     goldSum[per_summoner_info['teamId']] += per_summoner_info['goldEarned']
                     append_summoner_info_url = back_url + f"/append-summonerinfo/{match_info['metadata']['participants'][i]}"
+                    st.write(append_summoner_info_url)
                     result = requests.put(append_summoner_info_url, params={'puuid': match_info['metadata']['participants'][i]},  json=per_summoner_info)
                 #db에 저장하고
                 per_match_info = {
