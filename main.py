@@ -291,7 +291,6 @@ if search_summoner: #검색하기 위해 버튼을 누르면 검색 정보를 db
                 }
                 match_result = requests.post(append_match_info_url, json = per_match_info)
             get_matchinfo_from_db_url = back_url + f'/get-matchinfo-from-db/{match}'
-            st.write(get_matchinfo_from_db_url)
             per_match_info = requests.get(get_matchinfo_from_db_url, params = {'match_id' : match}).json()
             summoner_list_per_match = []
             for j in range(len(summoner_list)):
@@ -301,7 +300,6 @@ if search_summoner: #검색하기 위해 버튼을 누르면 검색 정보를 db
     
             #champion.json와 다른 정보에 따라 코드 작성
             # matchId 마다의 container
-            st.write(per_match_info)
             with st.container(border = True):
                 duration_seconds = int(per_match_info['gameDuration'])%60
                 date = datetime.fromtimestamp(per_match_info['gameCreation']/1000)
