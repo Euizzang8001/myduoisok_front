@@ -298,6 +298,7 @@ if search_summoner: #검색하기 위해 버튼을 누르면 검색 정보를 db
     
             #champion.json와 다른 정보에 따라 코드 작성
             # matchId 마다의 container
+            st.write(per_match_info)
             with st.container(border = True):
                 duration_seconds = int(per_match_info['gameDuration'])%60
                 date = datetime.fromtimestamp(per_match_info['gameCreation']/1000)
