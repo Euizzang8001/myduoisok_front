@@ -30,7 +30,7 @@ st.write(explain2)
 st.write(explain3)
 # summoner = st.text_input('Write The Summoner Name(Without Tag and Seperate Summoner Names with Commas)')
 summoner = st.text_input("검색하고 싶은 소환사들의 소환사명과 태그를 쓰세요!")
-st.write("','로 구분하세요 ex) 거모동의자랑#KR1, 순대꼬치#KR1, 씹현#1262")
+st.write("','로 구분하세요 ex) 거모동의자랑#KR1, 순대꼬치#KR1, 씹현#1262, 필요할사람#KR1")
 search_summoner = st.button('Search')
 
 summoner_puuid_list = []
