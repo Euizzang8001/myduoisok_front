@@ -30,7 +30,7 @@ st.write(explain2)
 st.write(explain3)
 # summoner = st.text_input('Write The Summoner Name(Without Tag and Seperate Summoner Names with Commas)')
 summoner = st.text_input("검색하고 싶은 소환사들의 소환사명과 태그를 쓰세요!")
-st.write("','로 구분하세요 ex) 거모동의자랑#KR1, 순대꼬치#KR1")
+st.write("','로 구분하세요 ex) 거모동의자랑#KR1, 순대꼬치#KR1, 씹현#1262, 필요할사람#KR1")
 search_summoner = st.button('Search')
 
 summoner_puuid_list = []
@@ -211,6 +211,8 @@ if search_summoner: #검색하기 위해 버튼을 누르면 검색 정보를 db
                         goldSum[per_summoner_info['teamId']] = 0
                     goldSum[per_summoner_info['teamId']] += per_summoner_info['goldEarned']
                     append_summoner_info_url = back_url + f"/append-summonerinfo/{match_info['metadata']['participants'][i]}"
+                    st.write(append_summoner_info_url)
+                    st.write(per_summoner_info)
                     result = requests.put(append_summoner_info_url, params={'puuid': match_info['metadata']['participants'][i]},  json=per_summoner_info)
                 #db에 저장하고
                 per_match_info = {
