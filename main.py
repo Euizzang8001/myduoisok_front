@@ -5,6 +5,8 @@ import json
 import os
 from PIL import Image
 import io
+import pandas as pd
+
 back_url = st.secrets["BACK_URL"]
 
 get_puuid_url = back_url + '/get-puuid'
@@ -13,10 +15,10 @@ get_match_info_url = back_url + '/get-matchinfo'
 check_match_in_db_url = back_url + '/check-match-in-db'
 append_match_info_url = back_url + '/append-matchinfo'
 
-image_url = 'https://ddragon.leagueoflegends.com/cdn/14.2.1/img/champion/'
+image_url = 'https://ddragon.leagueoflegends.com/cdn/14.13.1/img/champion/'
 
 
-champion_data = requests.get('https://ddragon.leagueoflegends.com/cdn/13.24.1/data/en_US/champion.json').json()
+champion_data = requests.get('https://ddragon.leagueoflegends.com/cdn/14.13.1/data/en_US/champion.json').json()
 
 number_list = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten']
 
@@ -37,8 +39,6 @@ summoner_puuid_list = []
 
 match_id_list = []
 
-
-
 if search_summoner: #검색하기 위해 버튼을 누르면 검색 정보를 db에 저장하고 불러오기
     summoner_nospace = ''.join(i for i in summoner if not i.isspace())
     summoner_list = list(summoner_nospace.split(','))
@@ -57,7 +57,7 @@ if search_summoner: #검색하기 위해 버튼을 누르면 검색 정보를 db
     else:
         # st.write(f"Out of 100 games, We Played Together in {len(match_id_list)}!!")
         st.write(f"100게임 중 {len(match_id_list)}판을 같이 하셨네요!!")
-        match_id_list.sort(reverse=False)
+        match_id_list = sorted(match_id_list, reverse=False)
         for match_number in range(len(match_id_list)-1, -1, -1):
             match = match_id_list[match_number]
             # st.write(match)
@@ -211,8 +211,6 @@ if search_summoner: #검색하기 위해 버튼을 누르면 검색 정보를 db
                         goldSum[per_summoner_info['teamId']] = 0
                     goldSum[per_summoner_info['teamId']] += per_summoner_info['goldEarned']
                     append_summoner_info_url = back_url + f"/append-summonerinfo/{match_info['metadata']['participants'][i]}"
-                    st.write(append_summoner_info_url)
-                    st.write(per_summoner_info)
                     result = requests.put(append_summoner_info_url, params={'puuid': match_info['metadata']['participants'][i]},  json=per_summoner_info)
                 #db에 저장하고
                 per_match_info = {
@@ -290,19 +288,131 @@ if search_summoner: #검색하기 위해 버튼을 누르면 검색 정보를 db
                     "teamRedTowerKills": match_info['info']['teams'][1]['objectives']['tower']['kills'],
                 }
                 match_result = requests.post(append_match_info_url, json = per_match_info)
+        #최근 10경기 요약 
+        st.write("함께한 최근 10경기 요약")
+        tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs(['All', 'vsLevel', 'vsKills', 'vsDeaths', 'vsAssists', 'vsGold', 'vsTDDTC', 'vsTDT', 'vsTH', 'vsTTCCD', 'vsVS'])
+        vsscoreDict0 = {}
+        vsscoreDict1 = {}
+        vsscoreDict2 = {}
+        vsscoreDict3 = {}
+        vsscoreDict4 = {}
+        vsscoreDict5 = {}
+        vsscoreDict6 = {}
+        vsscoreDict7 = {}
+        vsscoreDict8 = {}
+        vsscoreDict9 = {}
+        vsscoreDict10 = {}
+        for match_number in range(len(match_id_list)-11 if len(match_id_list)>=11 else 0, len(match_id_list)):
+            match = match_id_list[match_number]
+            get_matchinfo_from_db_url = back_url + f'/get-matchinfo-from-db/{match}'
+            per_match_info = requests.get(get_matchinfo_from_db_url, params = {'match_id' : match}).json()
+            for i in range(len(summoner_list)):
+                summoner_info_per_match_url = back_url + f"/get-summonerinfo-from-db/{summoner_puuid_list[i]}/{match}"
+                summoner_info_per_match = requests.get(summoner_info_per_match_url).json()
+                if summoner_list[i] not in vsscoreDict0:
+                    vsscoreDict0[summoner_list[i]] = []
+                if summoner_list[i] not in vsscoreDict1:
+                    vsscoreDict1[summoner_list[i]] = []
+                if summoner_list[i] not in vsscoreDict2:
+                    vsscoreDict2[summoner_list[i]] = []
+                if summoner_list[i] not in vsscoreDict3:
+                    vsscoreDict3[summoner_list[i]] = []
+                if summoner_list[i] not in vsscoreDict4:
+                    vsscoreDict4[summoner_list[i]] = []
+                if summoner_list[i] not in vsscoreDict5:
+                    vsscoreDict5[summoner_list[i]] = []
+                if summoner_list[i] not in vsscoreDict6:
+                    vsscoreDict6[summoner_list[i]] = []
+                if summoner_list[i] not in vsscoreDict7:
+                    vsscoreDict7[summoner_list[i]] = []
+                if summoner_list[i] not in vsscoreDict8:
+                    vsscoreDict8[summoner_list[i]] = []
+                if summoner_list[i] not in vsscoreDict9:
+                    vsscoreDict9[summoner_list[i]] = []
+                if summoner_list[i] not in vsscoreDict10:
+                    vsscoreDict10[summoner_list[i]] = []    
+                info1 = summoner_info_per_match['versuschampionLevel']
+                info2 = summoner_info_per_match['versuskills']  
+                info3 = summoner_info_per_match['versusdeaths']
+                info4 = summoner_info_per_match['versusassists']
+                info5 = summoner_info_per_match['versusgoldEarned']
+                info6 = summoner_info_per_match['versusTDDTC']
+                info7 = summoner_info_per_match['versusTDT']
+                info8 = summoner_info_per_match['versusTH']
+                info9 = summoner_info_per_match['versusTTCCD']
+                info10 = summoner_info_per_match['versusVS']
+                info0 = round((info1 * 100 + info2 * 100 + info3 * -100 + info4 + info5 * 150 + info6 / 4 + info7/4 + info8 / 100 + info9 * 5 + info10 * 15)/500, 1)
+                vsscoreDict0[summoner_list[i]].append(info0)
+                vsscoreDict1[summoner_list[i]].append(info1)
+                vsscoreDict2[summoner_list[i]].append(info2)
+                vsscoreDict3[summoner_list[i]].append(info3)
+                vsscoreDict4[summoner_list[i]].append(info4)
+                vsscoreDict5[summoner_list[i]].append(info5)
+                vsscoreDict6[summoner_list[i]].append(info6)
+                vsscoreDict7[summoner_list[i]].append(info7)
+                vsscoreDict8[summoner_list[i]].append(info8)
+                vsscoreDict9[summoner_list[i]].append(info9)
+                vsscoreDict10[summoner_list[i]].append(info10)
+        vsscoreDict0['sequence'] = [i for i in range(1, 1 + len(vsscoreDict0[summoner_list[0]]))]
+        vsscoreDict1['sequence'] = [i for i in range(1, 1 + len(vsscoreDict1[summoner_list[0]]))]
+        vsscoreDict2['sequence'] = [i for i in range(1, 1 + len(vsscoreDict2[summoner_list[0]]))]
+        vsscoreDict3['sequence'] = [i for i in range(1, 1 + len(vsscoreDict3[summoner_list[0]]))]
+        vsscoreDict4['sequence'] = [i for i in range(1, 1 + len(vsscoreDict4[summoner_list[0]]))]
+        vsscoreDict5['sequence'] = [i for i in range(1, 1 + len(vsscoreDict5[summoner_list[0]]))]
+        vsscoreDict6['sequence'] = [i for i in range(1, 1 + len(vsscoreDict6[summoner_list[0]]))]
+        vsscoreDict7['sequence'] = [i for i in range(1, 1 + len(vsscoreDict7[summoner_list[0]]))]
+        vsscoreDict8['sequence'] = [i for i in range(1, 1 + len(vsscoreDict8[summoner_list[0]]))]
+        vsscoreDict9['sequence'] = [i for i in range(1, 1 + len(vsscoreDict9[summoner_list[0]]))]
+        vsscoreDict10['sequence'] = [i for i in range(1, 1 + len(vsscoreDict10[summoner_list[0]]))]
+        chart_data0 = pd.DataFrame(vsscoreDict0, columns=summoner_list+['sequence'])
+        chart_data1 = pd.DataFrame(vsscoreDict1, columns=summoner_list+['sequence'])
+        chart_data2 = pd.DataFrame(vsscoreDict2, columns=summoner_list+['sequence'])
+        chart_data3 = pd.DataFrame(vsscoreDict3, columns=summoner_list+['sequence'])
+        chart_data4 = pd.DataFrame(vsscoreDict4, columns=summoner_list+['sequence'])
+        chart_data5 = pd.DataFrame(vsscoreDict5, columns=summoner_list+['sequence'])
+        chart_data6 = pd.DataFrame(vsscoreDict6, columns=summoner_list+['sequence'])
+        chart_data7 = pd.DataFrame(vsscoreDict7, columns=summoner_list+['sequence'])
+        chart_data8 = pd.DataFrame(vsscoreDict8, columns=summoner_list+['sequence'])
+        chart_data9 = pd.DataFrame(vsscoreDict9, columns=summoner_list+['sequence'])
+        chart_data10 = pd.DataFrame(vsscoreDict10, columns=summoner_list+['sequence'])
+        color=["#FF0000", "#0000FF", "#00FF00", "#F0F0F0", "#0F0F0F"]
+        tab0.subheader("ALL VS Score")
+        tab0.line_chart(chart_data0, x = 'sequence', y = summoner_list, color=color[0:len(summoner_list)])
+        tab1.subheader('동일 라인 상대와의 LEVEL 차이')
+        tab1.line_chart(chart_data1, x = 'sequence', y = summoner_list, color=color[0:len(summoner_list)])
+        tab2.subheader('동일 라인 상대와의 KILL 차이')
+        tab2.line_chart(chart_data2, x = 'sequence', y = summoner_list, color=color[0:len(summoner_list)])
+        tab3.subheader('동일 라인 상대와의 DEATH 차이')
+        tab3.line_chart(chart_data3, x = 'sequence', y = summoner_list, color=color[0:len(summoner_list)])
+        tab4.subheader('동일 라인 상대와의 ASSIST 횟수 차이')
+        tab4.line_chart(chart_data4, x = 'sequence', y = summoner_list, color=color[0:len(summoner_list)])
+        tab5.subheader('동일 라인 상대와의 번 GOLD 차이')
+        tab5.line_chart(chart_data5, x = 'sequence', y = summoner_list, color=color[0:len(summoner_list)])
+        tab6.subheader('동일 라인 상대와의 가한 피해랑 차이')
+        tab6.line_chart(chart_data6, x = 'sequence', y = summoner_list, color=color[0:len(summoner_list)])
+        tab7.subheader('동일 라인 상대와의 받은 피해량 차이')
+        tab7.line_chart(chart_data7, x = 'sequence', y = summoner_list, color=color[0:len(summoner_list)])
+        tab8.subheader('동일 라인 상대와의 총 HEAL 양의 차이')
+        tab8.line_chart(chart_data8, x = 'sequence', y = summoner_list, color=color[0:len(summoner_list)])
+        tab9.subheader('동일 라인 상대와의 CC기술을 사용한 시간의 차이')
+        tab9.line_chart(chart_data9, x = 'sequence', y = summoner_list, color=color[0:len(summoner_list)])
+        tab10.subheader('동일 라인 상대와의 VISION SCORE 차이')
+        tab10.line_chart(chart_data10, x = 'sequence', y = summoner_list, color=color[0:len(summoner_list)])
+            
+                
+        for match_number in range(len(match_id_list)-1, -1, -1):
+            #champion.json와 다른 정보에 따라 코드 작성
+            # matchId 마다의 container
+            match = match_id_list[match_number]
             get_matchinfo_from_db_url = back_url + f'/get-matchinfo-from-db/{match}'
             per_match_info = requests.get(get_matchinfo_from_db_url, params = {'match_id' : match}).json()
             summoner_list_per_match = []
             for j in range(len(summoner_list)):
                 get_summoner_from_db_url = back_url + f'/get-summonerinfo-from-db/{summoner_puuid_list[j]}/{match}'
                 summoner_list_per_match.append(requests.get(get_summoner_from_db_url, params = {'puuid': summoner_puuid_list[j],'match_id' : match}).json())
-
-    
-            #champion.json와 다른 정보에 따라 코드 작성
-            # matchId 마다의 container
             with st.container(border = True):
                 duration_seconds = int(per_match_info['gameDuration'])%60
-                date = datetime.fromtimestamp(per_match_info['gameCreation']/1000)
+                date = datetime.fromtimestamp(int(per_match_info['gameCreation'])/1000)
                 st.write(f"Game Date: {date.date()} / Game Time: {per_match_info['gameDuration']//60}:{duration_seconds:02}")
                 #게임 요약 부분(team Blue)
                 with st.container(border = True):
@@ -550,7 +660,6 @@ if search_summoner: #검색하기 위해 버튼을 누르면 검색 정보를 db
                                 st.write(f"<p style='text-align: center; font-size: 2;'><strong>당신은 버스 승객입니다.</p>", unsafe_allow_html=True)
                             else:
                                 st.write(f"<p style='text-align: center; font-size: 2;'><strong>당신 때문에 패배했네요!</p>", unsafe_allow_html=True)
-                                st.write(f"<p style='text-align: center; font-size: 2;'><strong>똥 좀 그만!@!@!@!@!@!</p>", unsafe_allow_html=True)
                         elif info < -50:
                             if summoner_info_per_match['win']:
                                 st.write(f"<p style='text-align: center; font-size: 2;'><strong>당신은 버스 승객입니다.</p>", unsafe_allow_html=True)
