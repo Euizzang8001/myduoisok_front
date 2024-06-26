@@ -32,7 +32,7 @@ st.write(explain2)
 st.write(explain3)
 # summoner = st.text_input('Write The Summoner Name(Without Tag and Seperate Summoner Names with Commas)')
 summoner = st.text_input("검색하고 싶은 소환사들의 소환사명과 태그를 쓰세요!")
-st.write("','로 구분하세요 ex) 거모동의자랑#KR1, 순대꼬치#KR1, 씹현#1262, 필요할사람#KR1")
+st.write("','로 구분하세요 ex) 거모동의자랑#KR1, 순대꼬치#KR1, 필요할사람#KR1")
 search_summoner = st.button('Search')
 
 summoner_puuid_list = []
@@ -51,9 +51,9 @@ if search_summoner: #검색하기 위해 버튼을 누르면 검색 정보를 db
             match_id_list = requests.get(get_match_list_url, params={'summoner_puuid': summoner_puuid}).json()
         else:
             match_id_list = list(set(match_id_list) & set(requests.get(get_match_list_url, params={'summoner_puuid': summoner_puuid}).json()))
-    if len(match_id_list) == 0:
+    if len(match_id_list) == 0 or match_id_list[0] == 0 or match_id_list[0] == '0':
         # st.error('Are You Duo? No game You Played Together In Last 100 Games !!')
-        st.error('듀오가 맞습니까???? 최근 100게임 중 한판도 같이 플레이 하지 않았습니다!!')
+        st.error('듀오가 맞습니까???? 최근 100게임 중 소환사의 협곡을 한판도 같이 플레이 하지 않았습니다!!')
     else:
         # st.write(f"Out of 100 games, We Played Together in {len(match_id_list)}!!")
         st.write(f"100게임 중 {len(match_id_list)}판을 같이 하셨네요!!")
