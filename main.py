@@ -399,68 +399,68 @@ if search_summoner: #검색하기 위해 버튼을 누르면 검색 정보를 db
         tab10.subheader('동일 라인 상대와의 VISION SCORE 차이')
         tab10.line_chart(chart_data10, x = 'sequence', y = summoner_list, color=color[0:len(summoner_list)])
             
-                
+        #경기 마다의 요약 부분       
         for match_number in range(len(match_id_list)-1, -1, -1):
-            #champion.json와 다른 정보에 따라 코드 작성
-            # matchId 마다의 container
+            #경기마다의 정보를 위해 API로 특정 경기의 정보를 받아오고, 그 경기의 참여자 정보도 List형태로 가져옴 
             match = match_id_list[match_number]
             get_matchinfo_from_db_url = back_url + f'/get-matchinfo-from-db/{match}'
             per_match_info = requests.get(get_matchinfo_from_db_url, params = {'match_id' : match}).json()
             summoner_list_per_match = []
+            #참여자들의 특정 경기 정보를 DB에서 가져옴 
             for j in range(len(summoner_list)):
                 get_summoner_from_db_url = back_url + f'/get-summonerinfo-from-db/{summoner_puuid_list[j]}/{match}'
                 summoner_list_per_match.append(requests.get(get_summoner_from_db_url, params = {'puuid': summoner_puuid_list[j],'match_id' : match}).json())
             with st.container(border = True):
-                duration_seconds = int(per_match_info['gameDuration'])%60
-                date = datetime.fromtimestamp(int(per_match_info['gameCreation'])/1000)
-                st.write(f"Game Date: {date.date()} / Game Time: {per_match_info['gameDuration']//60}:{duration_seconds:02}")
-                #게임 요약 부분(team Blue)
+                #경기 전체에 대한 요약을 나타내는 부분
+                duration_seconds = int(per_match_info['gameDuration'])%60 #경기 진행 시간 
+                date = datetime.fromtimestamp(int(per_match_info['gameCreation'])/1000)# 경기를 시작한 시각
+                st.write(f"Game Date: {date.date()} / Game Time: {per_match_info['gameDuration']//60}:{duration_seconds:02}") 
+                #팀 별 경기 요약 부분(team Blue)
                 with st.container(border = True):
                     with st.container():
-                        if per_match_info['teamBlueWin'] == 0:
+                        if per_match_info['teamBlueWin'] == 0: #승패 데이터 출력 
                             st.write('<p style="text-align: center; font-size: 2;"><strong>Blue팀 패배 / Red팀 승리</strong></p>', unsafe_allow_html=True)
                         else:
                             st.write('<p style="text-align: center; font-size: 2;"><strong>Blue팀 승리 / Red팀 패배</strong></p>', unsafe_allow_html=True)
-                    #blue team 요약
                     with st.container(border = True):
                             st.write('<p style="text-align: center; font-size: 2;color:blue;"><strong>Blue Team Data</strong></p>', unsafe_allow_html=True)
                             col1, col2, col3, col4, col5, col6, col7, col8 = st.columns(8)
-                            with col1:
-                                with st.container():
+                            with col1:#해당 팀의 벌어들인 Gold 데이터 부분
+                                with st.container(): 
                                     st.write(f"<p style='text-align: center; font-size: 2;'>Gold", unsafe_allow_html=True)
                                 with st.container():
                                     st.write(f"<p style='text-align: center; font-size: 2;'>{per_match_info['teamBlueGold']}", unsafe_allow_html=True)
-                            with col2:
+                            with col2:#해당 팀이 Baron이라는 경기 내 특정 요소를 제거한 횟수를 나타낸 부분
                                 with st.container():
                                     st.write(f"<p style='text-align: center; font-size: 2;'>Baron", unsafe_allow_html=True)
                                 with st.container():
                                     st.write(f"<p style='text-align: center; font-size: 2;'>{per_match_info['teamBlueBaronKills']}", unsafe_allow_html=True)
-                            with col3:
+                            with col3:#해당 팀이 상대 팀을 상대로 kill을 얼마나 했는지 나타내는 부분
                                 with st.container():
                                     st.write(f"<p style='text-align: center; font-size: 2;'>Kills", unsafe_allow_html=True)
                                 with st.container():
                                     st.write(f"<p style='text-align: center; font-size: 2;'>{per_match_info['teamBlueChampionKills']}", unsafe_allow_html=True)
-                            with col4:
+                            with col4:#해당 팀이 Dragon이라는 경기 내 특정 요소를 제거한 횟수를 나타낸 부분
                                 with st.container():
                                     st.write(f"<p style='text-align: center; font-size: 2;'>Dragon", unsafe_allow_html=True)
                                 with st.container():
                                     st.write(f"<p style='text-align: center; font-size: 2;'>{per_match_info['teamBlueDragonKills']}", unsafe_allow_html=True)
-                            with col5:
+                            with col5:#해당 팀이 Horde라는 경기 내 특정 요소를 제거한 횟수를 나타낸 부분
                                 with st.container():
                                     st.write(f"<p style='text-align: center; font-size: 2;'>Horde", unsafe_allow_html=True)
                                 with st.container():
                                     st.write(f"<p style='text-align: center; font-size: 2;'>{per_match_info['teamBlueHordeKills']}", unsafe_allow_html=True)
-                            with col6:
+                            with col6:#해당 팀이 Inhibitor라는 경기 내 특정 요소를 제거한 횟수를 나타낸 부분
                                 with st.container():
                                     st.write(f"<p style='text-align: center; font-size: 2;'>Inhibitor", unsafe_allow_html=True)
                                 with st.container():
                                     st.write(f"<p style='text-align: center; font-size: 2;'>{per_match_info['teamBlueInhibitorKills']}", unsafe_allow_html=True)
-                            with col7:
+                            with col7:#해당 팀이 Herald라는 경기 내 특정 요소를 제거한 횟수를 나타낸 부분
                                 with st.container():
                                     st.write(f"<p style='text-align: center; font-size: 2;'>Herald", unsafe_allow_html=True)
                                 with st.container():
                                     st.write(f"<p style='text-align: center; font-size: 2;'>{per_match_info['teamBlueRiftheraldKills']}", unsafe_allow_html=True)
-                            with col8:
+                            with col8:#해당 팀이 상대 팀의 Tower라는 경기 내 특정 요소를 제거한 횟수를 나타낸 부분 
                                 with st.container():
                                     st.write(f"<p style='text-align: center; font-size: 2;'>Tower", unsafe_allow_html=True)
                                 with st.container():
@@ -682,4 +682,48 @@ if search_summoner: #검색하기 위해 버튼을 누르면 검색 정보를 db
                                 st.write(f"<p style='text-align: center; font-size: 2;'><strong>당신의 직접적인 영향은 아닌 것 같아요.</p>", unsafe_allow_html=True)
                         else:
                             st.write(f"<p style='text-align: center; font-size: 2;'><strong>상대와 우열을 가리기 힘드네요.</p>", unsafe_allow_html=True)    
+
+        # st.write("함께한 최근 10경기 요약")
+        # #원하는 데이터에 대한 그래프를 얻을 수 있는 tab 생성
+        # tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs(['All', 'vsLevel', 'vsKills', 'vsDeaths', 'vsAssists', 'vsGold', 'vsTDDTC', 
+        #                                                                              'vsTDT', 'vsTH', 'vsTTCCD', 'vsVS'])
+        # #예시 VS score 변화 그래프 분석 
+        # vsscoreDict0 = {} #검색한 사용자들의 변화 데이터를 저장하는 dictionary 선언
+        # #최근 10경기 데이터를 찾아 반복문을 통해 vsscoreDict에 저장(최근 진행한 100경기 중 같이 한 경기가 10경기가 되지 않는다면 해당 경기들만을 가지고 그래프 그림)
+        # for match_number in range(len(match_id_list)-11 if len(match_id_list)>=11 else 0, len(match_id_list)):
+        #     match = match_id_list[match_number] #각 경기의 고유 id를 가지고 옴 
+        #     #API를 통해 데이터베이스에서 경기 정보를 가지고 옴 
+        #     get_matchinfo_from_db_url = back_url + f'/get-matchinfo-from-db/{match}'
+        #     per_match_info = requests.get(get_matchinfo_from_db_url, params = {'match_id' : match}).json()
+
+        #     #검색한 사용자들(summoner)마다의 특정 경기에서의 데이터들을 DB에서 가져오고 그 값들로 VS score를 계산 
+        #     for i in range(len(summoner_list)):
+        #         #특정 경기에서의 특정 사용자의 경기 데이터를 가지고 옴 
+        #         summoner_info_per_match_url = back_url + f"/get-summonerinfo-from-db/{summoner_puuid_list[i]}/{match}"
+        #         summoner_info_per_match = requests.get(summoner_info_per_match_url).json()
+        #         if summoner_list[i] not in vsscoreDict0:
+        #             vsscoreDict0[summoner_list[i]] = []
+        #         info1 = summoner_info_per_match['versuschampionLevel']
+        #         info2 = summoner_info_per_match['versuskills']  
+        #         info3 = summoner_info_per_match['versusdeaths']
+        #         info4 = summoner_info_per_match['versusassists']
+        #         info5 = summoner_info_per_match['versusgoldEarned']
+        #         info6 = summoner_info_per_match['versusTDDTC']
+        #         info7 = summoner_info_per_match['versusTDT']
+        #         info8 = summoner_info_per_match['versusTH']
+        #         info9 = summoner_info_per_match['versusTTCCD']
+        #         info10 = summoner_info_per_match['versusVS']
+
+        #         #레벨, 도움 횟수 등의 정보들을 통해 VS score 계산 
+        #         info0 = round((info1 * 100 + info2 * 100 + info3 * -100 + info4 + info5 * 150 + info6 / 4 + info7/4 + info8 / 100 + info9 * 5 + info10 * 15)/500, 1)
+        # #저장된 데이터들에 index 부여하여 DataFrame 자료형으로 변환 
+        # vsscoreDict0['sequence'] = [i for i in range(1, 1 + len(vsscoreDict0[summoner_list[0]]))]
+        # chart_data0 = pd.DataFrame(vsscoreDict0, columns=summoner_list+['sequence'])
+        # #그래프에서 사용자들을 구분하기 위한 색 선언 
+        # color=["#FF0000", "#0000FF", "#00FF00", "#F0F0F0", "#0F0F0F"]
+        # #해당 tab에서 VS score에 대한 그래프를 확인할 수 있도록 코드 작성 
+        # tab0.subheader("ALL VS Score")
+        # tab0.line_chart(chart_data0, x = 'sequence', y = summoner_list, color=color[0:len(summoner_list)])
+        
+            
                         
